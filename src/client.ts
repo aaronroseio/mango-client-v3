@@ -3276,7 +3276,13 @@ export class MangoClient {
     liabIndex: number,
     maxLiabTransfer: I80F48,
   ) {
-    const instruction = makeLiquidateTokenAndPerpInstruction(
+    const instruction1 = makeCachePricesInstruction(
+      this.programId,
+      mangoGroup.publicKey,
+      mangoGroup.mangoCache,
+      mangoGroup.oracles
+    )
+    const instruction2 = makeLiquidateTokenAndPerpInstruction(
       this.programId,
       mangoGroup.publicKey,
       mangoGroup.mangoCache,
@@ -3295,7 +3301,8 @@ export class MangoClient {
     );
 
     const transaction = new Transaction();
-    transaction.add(instruction);
+    transaction.add(instruction1);
+    transaction.add(instruction2);
 
     return await this.sendTransaction(transaction, payer, []);
   }
